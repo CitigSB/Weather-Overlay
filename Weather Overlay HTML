@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Overlay</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgba(0, 0, 0, 0.5); /* Transparent background */
+            color: white;
+            padding: 10px;
+        }
+        #weather {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #temperature {
+            font-size: 2em;
+        }
+        #condition {
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div id="weather">
+        <div id="temperature">Loading...</div>
+        <div id="condition">Loading...</div>
+    </div>
+
+    <script>
+        const weatherApiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=42.25&longitude=-79.48&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=America/New_York';
+
+        fetch(weatherApiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const temperature = data.daily.temperature_2m_max[0]; // Today's max temperature
+                const condition = getWeatherCondition(data.daily.weathercode[0]); // Weather code for condition
+                document.getElementById('temperature').textContent = `Temp: ${temperature}°F`;
+                document.getElementById('condition').textContent = `Condition: ${condition}`;
+            })
+            .catch(error => {
+                console.error('Error fetching weather data:', error);
+            });
+
+        function getWeatherCondition(code) {
+            const weatherConditions = {
+                0: 'Clear sky',
+                1: 'Partly cloudy',
+                2: 'Cloudy',
+                3: 'Rain',
+                4: 'Snow'
+                // Add more codes as needed
+            };
+            return weatherConditions[code] || 'Unknown';
+        }
+    </script>
+</body>
+</html>
